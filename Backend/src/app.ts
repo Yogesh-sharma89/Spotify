@@ -21,7 +21,7 @@ const app  = express();
 app.use(express.json());
 
 app.use(cors({
-    origin:process.env.BASE_URL,
+    origin:[process.env.BASE_URL! , "https://spotify-production-4f14.up.railway.app"],
     credentials:true,
     methods:["GET","POST","PUT","DELETE","PATCH"],
 }));
