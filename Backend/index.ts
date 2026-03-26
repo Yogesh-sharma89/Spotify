@@ -5,6 +5,7 @@ import { createServer } from "http";
 import { InitializeSocket } from "./src/config/socket.ts";
 import path from "path";
 import fs from "fs/promises";
+import "./src/config/cloudinary.ts"
 
 const port  = process.env.PORT;
 

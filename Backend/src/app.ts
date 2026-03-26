@@ -16,6 +16,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 
+
 const __dirname = process.cwd();
 
 const app  = express();
@@ -58,7 +59,7 @@ if(process.env.NODE_ENV === "production"){
 
 app.use(errorHandler);
 
-// startCronJob();
+startCronJob();
 
 
 export default app;

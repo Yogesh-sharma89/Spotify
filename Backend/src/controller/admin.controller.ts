@@ -316,6 +316,8 @@ export const updateAlbum = AsyncHandler(async (req, res) => {
             folder: "album_images",
             resource_type: "image"
         })
+        //now delete the image file from local storage
+        fs.unlinkSync(file.path);
     }
 
     album.title = title || album.title;
