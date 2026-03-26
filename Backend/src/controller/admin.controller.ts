@@ -43,6 +43,7 @@ export const CreateSong = AsyncHandler(async (req, res) => {
     let audioResult;
 
     try {
+        console.log(cloudinary.config());
         imageResult = await cloudinary.uploader.upload(imageFile.path, {
             folder: "images",
             resource_type: "image"
