@@ -1,34 +1,29 @@
-
-import streamifier from "streamifier";
-import cloudinary from "../config/cloudinary.ts";
+import cloudinary from "../config/cloudinary";
 
 interface CloudinaryUploadResult {
   secure_url: string;
   public_id: string;
 }
 
-export const uploadToCloudinary = (
+export const uploadToCloudinary = async (
   file: Express.Multer.File,
   folder: string,
   resourceType: "image" | "video" | "auto" = "auto"
-) => {
-  return new Promise<CloudinaryUploadResult>((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type: resourceType,
-        use_filename: true,
-      },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result as CloudinaryUploadResult);
-      }
-    );
+): Promise<CloudinaryUploadResult> => {
 
-    if(!file.buffer){
-      return reject(new Error("File buffer is empty"));
-    }
+  if (!file.buffer) {
+    throw new Error("File buffer is empty");
+  }
 
-    streamifier.createReadStream(file.buffer).pipe(stream);
+  const base64 = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+
+  const result = await cloudinary.uploader.upload(base64, {
+    folder,
+    resource_type: resourceType,
   });
+
+  return {
+    secure_url: result.secure_url,
+    public_id: result.public_id,
+  };
 };
