@@ -10,23 +10,25 @@ adminRouter.get('/check-admin',checkAdmin);
 
 
 adminRouter.post('/songs',uploadLimiter,
+    protectRoutes,requireAdmin,
     uploads.fields([
         {name:"audio",maxCount:1},
         {name:"image",maxCount:1}
     ])
-,protectRoutes,requireAdmin,CreateSong)
+,CreateSong)
 
 adminRouter.delete('/songs/:songId',protectRoutes,requireAdmin,deleteSong)
 
-adminRouter.post('/albums',uploadLimiter,uploads.single("image"),protectRoutes,requireAdmin,CreateAlbum);
+adminRouter.post('/albums',uploadLimiter,protectRoutes,requireAdmin,uploads.single("image"),CreateAlbum);
 adminRouter.delete('/albums/:albumId',protectRoutes,requireAdmin,deleteAlbum);
-adminRouter.patch('/albums/:albumId',uploadLimiter,uploads.single("image"),protectRoutes,requireAdmin,updateAlbum);
+adminRouter.patch('/albums/:albumId',uploadLimiter,protectRoutes,requireAdmin,uploads.single("image"),updateAlbum);
 adminRouter.put('/songs/:songId',uploadLimiter,
+    protectRoutes,requireAdmin,
     uploads.fields([
         {name:"audio",maxCount:1},
         {name:"image",maxCount:1}
     ])
-,protectRoutes,requireAdmin,updateSong)
+,updateSong)
 
 
 

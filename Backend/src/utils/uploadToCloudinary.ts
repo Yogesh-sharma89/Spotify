@@ -17,12 +17,17 @@ export const uploadToCloudinary = (
       {
         folder,
         resource_type: resourceType,
+        use_filename: true,
       },
       (error, result) => {
         if (error) return reject(error);
         resolve(result as CloudinaryUploadResult);
       }
     );
+
+    if(!file.buffer){
+      return reject(new Error("File buffer is empty"));
+    }
 
     streamifier.createReadStream(file.buffer).pipe(stream);
   });
