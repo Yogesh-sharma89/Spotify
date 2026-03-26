@@ -1,15 +1,9 @@
 import multer from 'multer';
 import path from 'path';
 import rateLimit from "express-rate-limit"
-import fs from 'fs';
 
-const __dirname = path.resolve();
 
-const uploadPath = path.join(__dirname,"uploads");
-
-if(!fs.existsSync(uploadPath)){
-  fs.mkdirSync(uploadPath);
-}
+const uploadPath = path.join(process.cwd(),"uploads");
 
 export const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 min
@@ -39,7 +33,7 @@ export const uploads = multer({
     storage,
     fileFilter,
     limits:{
-        fileSize: 10 * 1024 * 1024, //10MB
+        fileSize: 20 * 1024 * 1024, //10MB
     },
 
 })
