@@ -1,0 +1,22 @@
+{
+  "name": "spotify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build":"cd Backend && bun install && cd ../Frontend && bun install && bun run build",
+    "start":"cd Backend && bun run prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yogesh-sharma89/Spotify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Yogesh-sharma89/Spotify/issues"
+  },
+  "homepage": "https://github.com/Yogesh-sharma89/Spotify#readme"
+}

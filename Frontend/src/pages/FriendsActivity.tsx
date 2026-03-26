@@ -15,7 +15,7 @@ const FriendsActivity = () => {
 
   const {users:allUsers} = useGetAllUsers();
 
-  const {users,setUsers,onlineUsers,userActivities} = useChatStore((state)=>state);
+  const {users,setUsers,userActivities} = useChatStore((state)=>state);
    const {isMobile} = usePlayerStore((state)=>state);
 
   useEffect(()=>{
@@ -32,9 +32,6 @@ const FriendsActivity = () => {
     </div>
   )
 
-  
-  
-  console.log(users)
 
   return (
 

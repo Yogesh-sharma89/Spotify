@@ -24,7 +24,8 @@ export const useGetUserMessages = (userId:string)=>{
         queryFn:async()=>{
             const res = await axiosInstance.get(`/users/messages/${userId}`);
             return res.data.messages as Message[];
-        }
+        },
+        enabled:!!userId
     })
 }
  

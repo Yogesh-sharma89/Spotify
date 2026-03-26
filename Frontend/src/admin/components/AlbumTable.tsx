@@ -18,7 +18,6 @@ const AlbumTable = () => {
     const {mutate:deleteAlbum,isPending,variables} = useDeleteAlbum();
 
     const handleDelete = (albumId:string)=>{
-        console.log("Deleting :",albumId);
         deleteAlbum(albumId);
     }
     const [open,setOpen] = useState(false);

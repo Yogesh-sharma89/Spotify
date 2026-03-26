@@ -21,6 +21,7 @@ export const getUserMessages = AsyncHandler(async(req,res)=>{
     const {userId:myId} = getAuth(req);
     const {userId:otherUserId} = req.params as {userId:string};
 
+
     const messages = await Message.find({
         $or:[
             {

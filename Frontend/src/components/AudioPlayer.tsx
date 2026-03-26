@@ -6,7 +6,7 @@ const AudioPlayer = () => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const prevSongRef = useRef<string | null>(null);
 
-   const {currentSong,isPlaying,playNext} = usePlayerStore();
+   const {currentSong,isPlaying,PlayNext} = usePlayerStore();
 
    //music play and pause 
 
@@ -21,14 +21,14 @@ const AudioPlayer = () => {
     const audio = audioRef.current;
 
     const handleSongEnd = ()=>{
-        playNext();
+        PlayNext();
     }
 
     audio?.addEventListener("ended",handleSongEnd)
 
     return ()=>audio?.removeEventListener('ended',handleSongEnd);
 
-   },[playNext])
+   },[PlayNext])
 
 
    //handle music change 

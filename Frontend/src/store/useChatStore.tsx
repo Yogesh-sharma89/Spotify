@@ -20,7 +20,7 @@ interface ChatStore{
     sendMessage:(receiverId:string,senderId:string,content:string)=>void,
 }
 
-const baseUrl = "http://localhost:3000";
+const baseUrl = import.meta.env.MODE === "development" ? "http://localhost:3000" : "/"
 
 const socket = io(baseUrl,{
     withCredentials:true,

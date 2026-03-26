@@ -253,6 +253,9 @@ export const CreateAlbum = AsyncHandler(async(req,res)=>{
         resource_type:"image"
     })
 
+    //now delete the image file from local storage
+    fs.unlinkSync(file.path);
+
     //now create the album in database
 
    const newAlbum = await Album.create({
@@ -324,7 +327,7 @@ export const updateAlbum = AsyncHandler(async(req,res)=>{
 
     if(file){
         //if there is a new image then delete the old image from cloudinary and upload the new image
-        await cloudinary.uploader.destroy(album.imageId);
+        await cloudinary.uploader.destroy(album?.imageId!);
 
         uploadImage  = await cloudinary.uploader.upload(file.path,{
             folder:"album_images",

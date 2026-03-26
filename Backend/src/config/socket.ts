@@ -33,7 +33,6 @@ export const InitializeSocket = (server:http.Server)=>{
 
         socket.on("update-activity",({userId,activity})=>{
             userActivity.set(userId,activity);
-            console.log("user activity : ",userId ,activity);
 
             //broadcast to all users that this user's activity is updated
 

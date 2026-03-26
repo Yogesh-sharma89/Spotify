@@ -9,11 +9,11 @@ import usePlayerStore from "@/store/usePlayerStore";
 const UsersList = () => {
 
 
-   const {users,setSelectedUser,selectedUser,isConnected,onlineUsers} = useChatStore();
+   const {users,setSelectedUser,selectedUser,onlineUsers} = useChatStore();
    const {isLoading} = useGetAllUsers()
    const {isMobile} = usePlayerStore();
-   console.log(users)
 
+   
   return (
     <div className="border-r border-r-zinc-800">
 

@@ -31,8 +31,6 @@ const LeftSidebar = () => {
       
     },[albumsData,setAlbums])
 
-    console.log(albums)
-
   return (
     <div className="max-h-[calc(100vh-80px)] h-full  overflow-hidden w-full flex min-h-0 flex-col gap-2">
 

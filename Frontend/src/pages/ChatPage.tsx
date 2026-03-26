@@ -10,19 +10,23 @@ import type { Message } from "@/interfaces/message"
 import useChatStore from "@/store/useChatStore"
 import usePlayerStore from "@/store/usePlayerStore"
 import { RedirectToSignIn, useAuth, useUser } from "@clerk/react"
-import { useEffect, useRef } from "react"
+import { Loader2Icon } from "lucide-react"
+import { useEffect, useMemo, useRef } from "react"
 
 const ChatPage = () => {
-  const { isSignedIn, isLoaded, userId } = useAuth()
+  const { isSignedIn, isLoaded } = useAuth()
   const { user } = useUser()
 
   const { users: allUsers, isLoading } = useGetAllUsers()
-  const { data: userMessages, isLoading: userMessagesLoading } =
-    useGetUserMessages(userId!)
+ 
 
-  const { setMessages, selectedUser, setUsers, messages,socket } = useChatStore()
+  const { setMessages, selectedUser, setUsers, messages, socket } =
+    useChatStore();
+
+  const { data: userMessages, isLoading: userMessagesLoading } = useGetUserMessages(selectedUser?.clerkId || "")
+
   const { isMobile } = usePlayerStore()
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (allUsers) {
@@ -31,37 +35,46 @@ const ChatPage = () => {
   }, [allUsers, setUsers])
 
   useEffect(() => {
-    if (!selectedUser) return;
-   
-      setMessages(userMessages || []);
-    
+    if (!selectedUser) return
+
+    setMessages(userMessages || [])
   }, [userMessages, setMessages, selectedUser])
 
-  useEffect(()=>{
-    if(!socket) return;
+  const selectedUserId = useMemo(
+    () => selectedUser?.clerkId,
+    [selectedUser]
+  );
 
-    const handleMessage = (message:Message) => {
-      if (message.senderId !== selectedUser?._id &&
-          message.receiverId !== selectedUser?._id) return;
+  useEffect(() => {
+    if (!socket || !selectedUserId) return
 
+    const handleMessage = (message: Message) => {
+      const myId = user?.id;
+      if (
+        !(
+          (message.senderId === myId && message.receiverId === selectedUserId) ||
+          (message.senderId === selectedUserId && message.receiverId === myId)
+        )
+      ) return;
       setMessages((prev) => {
-        if (prev.some((m) => m._id === message._id)) return prev;
-        return [...prev, message];
-      });
-    } ;
+        if (prev.some((m) => m._id === message._id)) return prev
+        return [...prev, message]
+      })
+    }
 
-    socket.on("receive-message", handleMessage);
+    socket.off("receive-message"); // prevent duplicates
+    socket.on("receive-message", handleMessage)
 
     return () => {
-      socket.off("receive-message", handleMessage);
-    };
-  },[socket, selectedUser, setMessages])
-
-  useEffect(()=>{
-    if(bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+      socket.off("receive-message", handleMessage)
     }
-  },[messages?.length])
+  }, [socket, setMessages, selectedUserId, user?.id])
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages?.length])
 
   if (!isLoaded) return null
 
@@ -69,8 +82,13 @@ const ChatPage = () => {
     return <RedirectToSignIn />
   }
 
-  if (isLoading || userMessagesLoading) return
-  ;<div>Loading...</div>
+  if (isLoading || userMessagesLoading) {
+    return (
+       <div className="flex justify-center items-center h-full">
+         <Loader2Icon className="animate-spin size-12"/>
+       </div>
+    )
+  }
 
   const messageTime = (value: string) => {
     const time = new Date(value).toLocaleTimeString([], {
@@ -83,19 +101,19 @@ const ChatPage = () => {
   }
 
   return (
-    <main className="h-full w-full flex flex-col  overflow-hidden rounded-md bg-linear-to-b from-zinc-800 to-zinc-900">
+    <main className="flex h-full w-full flex-col overflow-hidden rounded-md bg-linear-to-b from-zinc-800 to-zinc-900">
       <TopNavbar />
-      <div className=" flex-1 min-h-0 grid overflow-hidden grid-cols-[80px_1fr] lg:grid-cols-[300px_1fr] h-[calc(100vh-180px)]">
+      <div className="grid h-[calc(100vh-180px)] min-h-0 flex-1 grid-cols-[80px_1fr] overflow-hidden lg:grid-cols-[300px_1fr]">
         <UsersList />
 
-         <div className="flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden">
           {selectedUser ? (
             <>
               <ChatHeader />
 
               {/* messages  */}
 
-              <ScrollArea className="min-h-0 flex-1 overflow-y-auto h-[calc(100vh-340px)]">
+              <ScrollArea className="h-[calc(100vh-340px)] min-h-0 flex-1 overflow-y-auto">
                 <div className={`space-y-4 ${isMobile ? "p-2" : "p-4"} `}>
                   {user &&
                     messages?.map((message) => (
@@ -122,29 +140,28 @@ const ChatPage = () => {
                         <div
                           className={`rounded-lg text-white ${isMobile ? "px-2 py-1" : "px-4 py-2"} ${message.senderId === user?.id ? "bg-[#1DB954]" : "bg-[#333333]"} `}
                         >
-                          <p className="text-sm wrap-break-word">{message.content}</p>
-                          <span className={`mt-1 block text-xs  font-medium
-                            ${message.senderId === user?.id ? "text-zinc-800":"text-zinc-400"}
-                            `}>
+                          <p className="text-sm wrap-break-word">
+                            {message.content}
+                          </p>
+                          <span
+                            className={`mt-1 block text-xs font-medium ${message.senderId === user?.id ? "text-zinc-800" : "text-zinc-400"} `}
+                          >
                             {messageTime(message.createdAt!)}
                           </span>
                         </div>
                       </div>
                     ))}
 
-                    <div ref={bottomRef} />
+                  <div ref={bottomRef} />
                 </div>
               </ScrollArea>
 
-             
-
-              
-                <ChatInput />
+              <ChatInput />
             </>
           ) : (
             <NoConversationPlaceholder />
           )}
-          </div>
+        </div>
       </div>
     </main>
   )

@@ -49,8 +49,6 @@ const AlbumPage = () => {
     }
   }, [AlbumData, setAlbum])
 
-  console.log(album)
-
 
   const handlePlayAlbum = (index: number) => {
      if(!isSignedIn){

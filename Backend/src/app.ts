@@ -10,7 +10,10 @@ import { errorHandler } from './utils/errorHandler.ts';
 import { serve } from 'inngest/express';
 import { inngest,functions } from './inngest/index.ts';
 import { clerkMiddleware } from '@clerk/express';
+import path from 'path';
+import startCronJob from './cron/index.ts';
 
+const __dirname = path.resolve();
 
 
 const app  = express();
@@ -35,8 +38,17 @@ app.use("/api/albums",albumRouter);
 app.use("/api/stats",statsRouter)
 
 
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname,"../Frontend/dist")));
 
+    app.get("/.",(req,res)=>{
+        res.sendFile(path.join(__dirname,"../Frontend","dist","index.html"))
+    })
+}
 
 app.use(errorHandler);
+
+startCronJob();
+
 
 export default app;

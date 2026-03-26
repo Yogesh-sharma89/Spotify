@@ -15,7 +15,7 @@ import { toast } from "sonner";
 const AddSongDialog = () => {
 
   const [open, setOpen] = useState(false);
-  const {data:albums,isLoading:albumsLoading} = useGetAllAlbums();
+  const {data:albums} = useGetAllAlbums();
   const {isMobile} = usePlayerStore()
  
   const [newSong, setNewSong] = useState<{

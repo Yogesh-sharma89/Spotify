@@ -33,7 +33,7 @@ const PlaybackControls = () => {
     const handleUpdateDuration = ()=>setDuration(audio.duration);
     const handleEnded = ()=>{
         if(isLooping) return;
-       PlayNext(user?.id,socket!);
+       setIsPlaying(false);
     }
 
     audio.addEventListener("timeupdate",handleUpdateTime);
@@ -46,7 +46,7 @@ const PlaybackControls = () => {
       audio.removeEventListener("ended",handleEnded);
     }
 
-  },[currentSong,audioRef,setIsPlaying,PlayNext,isLooping])
+  },[currentSong,audioRef,setIsPlaying,isLooping])
 
   useEffect(()=>{
     if(audioRef.current){

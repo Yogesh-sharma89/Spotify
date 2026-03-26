@@ -23,11 +23,15 @@
     "inngest": "^4.0.1",
     "mongoose": "^9.3.0",
     "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
     "socket.io": "^4.8.3",
     "svix": "^1.89.0"
   },
   "scripts": {
     "dev": "nodemon --exec ts-node index.ts",
+    "build":"tsc",
+    "start":"node dist/index.js",
+    "prod":"bun run build && bun run index.js",
     "seed:songs": "ts-node src/seeds/songs.ts",
     "seed:albums": "ts-node src/seeds/albums.ts"
   }
