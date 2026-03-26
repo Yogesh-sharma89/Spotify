@@ -25,7 +25,7 @@ import usePlayerStore from "@/store/usePlayerStore"
 import { formatDuration } from "@/utils/fomratDuration"
 import type { UseMutateFunction } from "@tanstack/react-query"
 import { HeadphonesIcon, ImageUpIcon } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 
 interface updateSongParams {
@@ -61,12 +61,13 @@ const UpdateSongDialog = ({ open, onOpenChange, song,isPending,updateSong }: upd
     image: null,
   })
 
-  const previewImageUrl = files.image
-    ? URL.createObjectURL(files.image)
-    : song?.imageUrl
-  const previewAudioUrl = files.audio
-    ? URL.createObjectURL(files.audio)
-    : song?.audioUrl
+  const previewImageUrl = useMemo(() => {
+        return files.image ? URL.createObjectURL(files.image) : null;
+      }, [files.image]);
+  
+  const previewAudioUrl = useMemo(() => {
+    return files.audio ? URL.createObjectURL(files.audio) : null;
+  }, [files.audio]);
 
   const audioinputRef = useRef<HTMLInputElement>(null)
   const imageinputRef = useRef<HTMLInputElement>(null)
@@ -215,7 +216,7 @@ const UpdateSongDialog = ({ open, onOpenChange, song,isPending,updateSong }: upd
               />
 
               <div className="flex h-auto cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900 p-3 transition-colors hover:bg-zinc-900/40">
-                {previewImageUrl ? (
+                {files.image && previewImageUrl ? (
                   <img
                     src={previewImageUrl}
                     alt="preview"
@@ -268,7 +269,7 @@ const UpdateSongDialog = ({ open, onOpenChange, song,isPending,updateSong }: upd
               />
 
               <div className="flex h-auto cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900 p-3 transition-colors hover:bg-zinc-900/40">
-                {previewAudioUrl ? (
+                {files.audio && previewAudioUrl ? (
                   <audio controls className="w-full">
                     <source src={previewAudioUrl!} />
                   </audio>

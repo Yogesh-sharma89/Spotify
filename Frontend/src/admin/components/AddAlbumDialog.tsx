@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useCreateAlbum } from "@/hooks/useAdmin";
 import usePlayerStore from "@/store/usePlayerStore";
 import { ImageUpIcon, LoaderIcon, PlusIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 
@@ -28,7 +28,9 @@ const AddAlbumDialog = () => {
 
     const [image,setImage] = useState<File|null>(null);
 
-     const previewImageUrl = image ? URL.createObjectURL(image) : null;
+    const previewImageUrl = useMemo(() => {
+        return image ? URL.createObjectURL(image) : null;
+    }, [image]);
 
     const handleImageChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
         if(e.target.files){
@@ -126,7 +128,7 @@ const AddAlbumDialog = () => {
 
                      <div className="flex bg-zinc-900 rounded-lg flex-col items-center justify-center gap-3 p-3 h-auto border-2 border-dashed border-zinc-700 hover:bg-zinc-900/40 cursor-pointer transition-colors">
                       
-                       { previewImageUrl ? (
+                       {image && previewImageUrl ? (
                         <img
                         src={previewImageUrl}
                         alt="preview"
