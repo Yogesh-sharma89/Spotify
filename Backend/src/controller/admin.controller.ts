@@ -8,6 +8,7 @@ import User from "../models/user.model.ts";
 import { getAuth } from "@clerk/express";
 
 import "dotenv/config";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.ts";
 
 export const CreateSong = AsyncHandler(async (req, res) => {
     if (!req.files) {
@@ -39,20 +40,36 @@ export const CreateSong = AsyncHandler(async (req, res) => {
 
     //upload these audio and image to cloudinary and get the url
 
-    let imageResult;
-    let audioResult;
-
     try {
-        console.log(cloudinary.config());
-        imageResult = await cloudinary.uploader.upload(imageFile.path, {
-            folder: "images",
-            resource_type: "image"
-        });
+        const [imageResult, audioResult] = await Promise.all([
+            uploadToCloudinary(imageFile, "images", "image"),
+            uploadToCloudinary(audioFile, "audio", "auto"),
+        ]);
 
-        audioResult = await cloudinary.uploader.upload(audioFile.path, {
-            folder: "audio",
-            resource_type: "auto"
-        });
+        const newSong = await Song.create({
+            title,
+            artist,
+            duration: validDuration,
+            albumId,
+            imageUrl: imageResult?.secure_url,
+            imageId: imageResult?.public_id,
+            audioUrl: audioResult?.secure_url,
+            audioId: audioResult?.public_id,
+        })
+    
+        if (albumId) {
+            await Album.findByIdAndUpdate(albumId, {
+                $push: { songs: newSong._id }
+            })
+        }
+
+
+        res.status(201).json({
+        success: true,
+        message: "Song created successfully",
+        song: newSong,
+        })
+
 
     } catch (err) {
         console.error("Cloudinary error:", err);
@@ -62,29 +79,6 @@ export const CreateSong = AsyncHandler(async (req, res) => {
         fs.unlinkSync(imageFile.path);
         fs.unlinkSync(audioFile.path);
     }
-
-    const newSong = await Song.create({
-        title,
-        artist,
-        duration: validDuration,
-        albumId,
-        imageUrl: imageResult?.url,
-        imageId: imageResult?.id,
-        audioUrl: audioResult?.url,
-        audioId: audioResult?.id,
-    })
-
-    if (albumId) {
-        await Album.findByIdAndUpdate(albumId, {
-            $push: { songs: newSong._id }
-        })
-    }
-
-    res.status(201).json({
-        success: true,
-        message: "Song created successfully",
-        song: newSong,
-    })
 
 })
 
@@ -175,10 +169,7 @@ export const updateSong = AsyncHandler(async (req, res) => {
             await cloudinary.uploader.destroy(song.imageId);
         }
         //now upload the new image to cloudinary
-        const uploadImage = await cloudinary.uploader.upload(imageFile.path, {
-            folder: "images",
-            resource_type: "image"
-        })
+        const uploadImage = await uploadToCloudinary(imageFile, "images", "image");
 
         //now update the song image url and id
         song.imageUrl = uploadImage.secure_url;
@@ -193,15 +184,10 @@ export const updateSong = AsyncHandler(async (req, res) => {
             await cloudinary.uploader.destroy(song.audioId);
         }
         //now upload the new audio to cloudinary
-        const uploadAudio = await cloudinary.uploader.upload(audioFile.path, {
-            folder: "audio",
-            resource_type: "auto"
-        })
+        const uploadAudio = await uploadToCloudinary(audioFile, "audio", "auto");
         //now update the song audio url and id
         song.audioUrl = uploadAudio.secure_url;
         song.audioId = uploadAudio.public_id;
-
-        fs.unlinkSync(audioFile.path);
 
     }
 
@@ -232,13 +218,7 @@ export const CreateAlbum = AsyncHandler(async (req, res) => {
 
     //now first upload the image to cloudinary and get the url
 
-    const uploadImage = await cloudinary.uploader.upload(file.path, {
-        folder: "album_images",
-        resource_type: "image"
-    })
-
-    //now delete the image file from local storage
-    fs.unlinkSync(file.path);
+    const uploadImage = await uploadToCloudinary(file, "album_images", "image");
 
     //now create the album in database
 
@@ -313,12 +293,7 @@ export const updateAlbum = AsyncHandler(async (req, res) => {
         //if there is a new image then delete the old image from cloudinary and upload the new image
         await cloudinary.uploader.destroy(album?.imageId!);
 
-        uploadImage = await cloudinary.uploader.upload(file.path, {
-            folder: "album_images",
-            resource_type: "image"
-        })
-        //now delete the image file from local storage
-        fs.unlinkSync(file.path);
+        uploadImage = await uploadToCloudinary(file, "album_images", "image");
     }
 
     album.title = title || album.title;

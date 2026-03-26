@@ -11,13 +11,12 @@ import { serve } from 'inngest/express';
 import { inngest,functions } from './inngest/index.ts';
 import { clerkMiddleware } from '@clerk/express';
 import path from 'path';
-import startCronJob from './cron/index.ts';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
 
+const __dirname = path.resolve();
 
-const __dirname = process.cwd();
 
 const app  = express();
 
@@ -58,8 +57,5 @@ if(process.env.NODE_ENV === "production"){
 }
 
 app.use(errorHandler);
-
-startCronJob();
-
 
 export default app;
