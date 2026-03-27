@@ -12,7 +12,7 @@ const FeaturedSongs = ({songs,isLoading}:{songs:Song[],isLoading:boolean}) => {
 
   const [activeSongId,setActiveSongId] = useState<string | null>(null);
 
-  const {currentSong,isPlaying,SetCurrentSong,TooglePlay} = usePlayerStore();
+  const {currentSong,SetCurrentSong,TooglePlay} = usePlayerStore();
 
   const {openSignIn,isSignedIn,user} = useClerk();
   const socket = useChatStore((state)=>state.socket);
