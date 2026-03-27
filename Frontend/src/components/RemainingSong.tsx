@@ -3,9 +3,21 @@ import { Button } from "./ui/button"
 import { ChevronRightIcon } from "lucide-react"
 import RemainingSongSkeleton from "./skeletons/RemainingSongSkeleton"
 import PLayButton from "./PLayButton"
+import { useState } from "react"
+import usePlayerStore from "@/store/usePlayerStore"
+import { useClerk } from "@clerk/react"
+import useChatStore from "@/store/useChatStore"
 
 
 const RemainingSong = ({title,songs,isLoading}:{title:string,songs:Song[],isLoading:boolean}) => {
+
+  const [activeSongId,setActiveSongId] = useState<string | null>(null);
+
+  const {currentSong,SetCurrentSong,TooglePlay} = usePlayerStore();
+
+  const {openSignIn,isSignedIn,user} = useClerk();
+  const socket = useChatStore((state)=>state.socket);
+
     if(isLoading){
      <RemainingSongSkeleton/>
     }
@@ -24,6 +36,20 @@ const RemainingSong = ({title,songs,isLoading}:{title:string,songs:Song[],isLoad
                 songs?.map((song)=>(
                     <div key={song._id}
                      className="bg-zinc-800/40 rounded-md cursor-pointer p-4 group hover:bg-zinc-700/40 transition-all"
+                     onClick={()=>{
+                        setActiveSongId(song._id); // 👈 mobile ke liye
+
+                        if (!isSignedIn) {
+                          openSignIn();
+                          return;
+                        }
+
+                        if (currentSong?._id === song._id) {
+                          TooglePlay(user?.id, socket!);
+                        } else {
+                          SetCurrentSong(song, user?.id, socket!);
+                        }
+                      }} 
                     >
                       
                       <div className="relative mb-4">
@@ -40,7 +66,7 @@ const RemainingSong = ({title,songs,isLoading}:{title:string,songs:Song[],isLoad
 
                         {/* todo : add play button  */}
 
-                        <PLayButton song={song}/>
+                        <PLayButton song={song } activeSongId={activeSongId}/>
 
                       </div>
 
