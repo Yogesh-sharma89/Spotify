@@ -19,7 +19,7 @@ const RemainingSong = ({title,songs,isLoading}:{title:string,songs:Song[],isLoad
   const socket = useChatStore((state)=>state.socket);
 
     if(isLoading){
-     <RemainingSongSkeleton/>
+      return <RemainingSongSkeleton/>
     }
   return (
     <div className="w-full overflow-hidden ">
