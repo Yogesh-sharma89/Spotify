@@ -66,7 +66,7 @@ const RemainingSong = ({title,songs,isLoading}:{title:string,songs:Song[],isLoad
 
                         {/* todo : add play button  */}
 
-                        <PLayButton song={song } activeSongId={activeSongId}/>
+                        <PLayButton song={song} activeSongId={activeSongId ?? null}/>
 
                       </div>
 

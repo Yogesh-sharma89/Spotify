@@ -53,7 +53,7 @@ const FeaturedSongs = ({songs,isLoading}:{songs:Song[],isLoading:boolean}) => {
                     <p className="truncate text-xs text-zinc-400">{song.artist}</p>
                 </div>
 
-                <PLayButton song={song}  activeSongId={activeSongId}/>
+                <PLayButton song={song}  activeSongId={activeSongId ?? null}/>
 
             </div>
         ))
