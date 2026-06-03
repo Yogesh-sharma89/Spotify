@@ -23,7 +23,7 @@ const FeaturedSongs = ({songs,isLoading}:{songs:Song[],isLoading:boolean}) => {
   return (
     <div className="w-full mb-2 overflow-hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 ">
       {
-        songs.map((song)=>(
+        songs?.map((song)=>(
             <div key={song._id} 
                className="relative  flex items-center gap-2 group bg-zinc-800/50 hover:bg-zinc-700/50 cursor-pointer rounded-md select-none transition-colors"
                onClick={()=>{
