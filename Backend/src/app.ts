@@ -31,7 +31,7 @@ app.use(morgan("combined"));
 app.use(express.json());
 
 app.use(cors({
-    origin:[process.env.BASE_URL || true , "https://spotify-production-4f14.up.railway.app"],
+    origin:[process.env.BASE_URL! , "https://spotify-production-9d55.up.railway.app"],
     credentials:true,
     methods:["GET","POST","PUT","DELETE","PATCH"],
 }));
